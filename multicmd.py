@@ -2,6 +2,7 @@
 
 from argparse import ArgumentParser
 from fabric import Connection
+from invoke.exceptions import UnexpectedExit
 from os import path
 from threading import Thread
 
@@ -41,15 +42,18 @@ def runner(cmd: str, host: str, timeout: int, output: dict):
         if not conn.is_connected:
             out = 'Unable to connect to host'
         else:
-            result = conn.run(cmd,
-                              echo=True,
-                              encoding='utf-8',
-                              hide=True,
-                              timeout=timeout,
-                            )
-            out = result.stdout
-    output[host] = out
+            try:
+                result = conn.run(cmd,
+                                  echo=True,
+                                  encoding='utf-8',
+                                  hide=True,
+                                  timeout=timeout,
+                                )
+                out = result.stdout
+            except UnexpectedExit as e:
+                out = e
 
+    output[host] = out
 
 def parse_args():
     '''
