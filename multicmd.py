@@ -168,6 +168,8 @@ def run(args):
         file_hosts = load_hosts_from_file(args.filename)
         host_list.extend(file_hosts)
         
+    host_list = set(host_list)
+
     output_dict = run_threads(host_list,
                               ' '.join(args.cmd),
                               args.timeout,
